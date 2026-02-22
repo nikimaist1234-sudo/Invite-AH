@@ -11,7 +11,7 @@ html, body {
     background: black;
 }
 
-/* ---------------- PAGE SYSTEM (Initial: Smooth Transitions) ---------------- */
+/* ---------------- PAGE SYSTEM (Smooth Transitions) ---------------- */
 .page {
     position: absolute;
     top: 0;
@@ -56,6 +56,33 @@ html, body {
 #page1 {
     background: url("weeknd-bg.jpg") no-repeat center center/cover;
     color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bloom haze layer when “blinded by the lights” hits */
+#page1::after{
+    content:"";
+    position:absolute;
+    inset:-20%;
+    pointer-events:none;
+    opacity: 0;
+    background:
+        radial-gradient(60% 50% at 50% 45%, rgba(255,215,0,0.22), transparent 60%),
+        radial-gradient(40% 35% at 35% 40%, rgba(255,255,255,0.12), transparent 60%),
+        radial-gradient(55% 50% at 65% 55%, rgba(255,215,0,0.16), transparent 65%);
+    filter: blur(14px);
+    z-index: 2;
+    transition: opacity 180ms ease;
+}
+
+#page1.blooming::after{
+    opacity: 1;
+}
+
+/* Subtle bloom effect on content */
+#page1.blooming .overlay{
+    filter: saturate(1.08) contrast(1.06) brightness(1.05);
 }
 
 .overlay {
@@ -64,6 +91,8 @@ html, body {
     border-radius: 15px;
     text-align: center;
     width: min(820px, 94vw);
+    position: relative;
+    z-index: 3;
 }
 
 .big-title {
@@ -157,6 +186,7 @@ html, body {
     pointer-events:none;
 }
 
+/* Base symbol styling */
 .symbol{
     font-size: 3.2rem;
     text-shadow:
@@ -164,6 +194,17 @@ html, body {
         0 0 28px rgba(255, 60, 60, 0.10);
     transform: translateZ(0);
     will-change: transform, filter;
+}
+
+/* XO symbol special look */
+.symbol.xo{
+    font-size: 3.05rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.20),
+        0 0 22px rgba(255,215,0,0.30),
+        0 0 38px rgba(255,215,0,0.18);
 }
 
 .reel.spinning .symbol{
@@ -291,36 +332,14 @@ html, body {
     100%{ transform: scale(1); opacity: 0.55; }
 }
 
-/* Floating icons + gold lights */
-.float-layer, .spark-layer, .gold-flash{
+/* Local layers */
+.float-layer, .spark-layer{
     position: absolute;
     inset: 0;
     pointer-events: none;
 }
-
 .float-layer{ z-index: 10; }
 .spark-layer{ z-index: 12; }
-
-.gold-flash{
-    z-index: 11;
-    opacity: 0;
-    background: radial-gradient(65% 60% at 50% 45%,
-        rgba(255, 215, 0, 0.98),
-        rgba(255, 215, 0, 0.45) 45%,
-        rgba(255, 215, 0, 0.18) 62%,
-        rgba(0,0,0,0) 78%);
-    mix-blend-mode: screen;
-}
-
-.gold-flash.on{
-    animation: flash 1200ms ease-out forwards;
-}
-
-@keyframes flash{
-    0%{ opacity: 0; transform: scale(0.92); }
-    15%{ opacity: 1; transform: scale(1); }
-    100%{ opacity: 0; transform: scale(1.25); }
-}
 
 .float-icon{
     position: absolute;
@@ -328,6 +347,13 @@ html, body {
     filter: drop-shadow(0 0 12px rgba(255,215,0,0.25));
     will-change: transform, opacity;
     animation: floatAround 1250ms ease-out forwards;
+}
+.float-icon.xo{
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-shadow:
+        0 0 14px rgba(255,255,255,0.18),
+        0 0 26px rgba(255,215,0,0.32);
 }
 
 @keyframes floatAround{
@@ -357,15 +383,71 @@ html, body {
     border-color: rgba(255, 215, 0, 0.55);
     box-shadow: 0 28px 72px rgba(255, 215, 0, 0.14), 0 24px 60px rgba(0,0,0,0.55);
 }
-
 .slot-machine.won .symbol{
     animation: winPulse 650ms ease-in-out infinite;
 }
-
 @keyframes winPulse{
     0%{ transform: scale(1); }
     50%{ transform: scale(1.06); }
     100%{ transform: scale(1); }
+}
+
+/* ---------------- FULL PAGE GOLD POP OVERLAY ---------------- */
+.gold-pop-layer{
+    position: absolute;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+.gold-pop-layer.on{ opacity: 1; }
+
+.gold-pop{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255,215,0,0.95);
+    box-shadow:
+        0 0 14px rgba(255,215,0,0.65),
+        0 0 34px rgba(255,215,0,0.35);
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+    animation: goldPop 900ms ease-out forwards;
+}
+@keyframes goldPop{
+    0%{ transform: scale(0.35); opacity: 0; }
+    18%{ transform: scale(1.35); opacity: 1; }
+    100%{ transform: scale(5.2); opacity: 0; }
+}
+
+/* Camera flash layer */
+.flash-layer{
+    position: absolute;
+    inset: 0;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(255,255,255,1);
+    mix-blend-mode: screen;
+}
+
+/* Page fade into invite */
+.page-fade{
+    position: absolute;
+    inset: 0;
+    z-index: 10001;
+    pointer-events: none;
+    background: rgba(0,0,0,0);
+    opacity: 0;
+}
+.page-fade.on{
+    animation: pageFade 650ms ease-in-out forwards;
+}
+@keyframes pageFade{
+    0%{ opacity: 0; background: rgba(0,0,0,0); }
+    100%{ opacity: 1; background: rgba(0,0,0,1); }
 }
 
 /* ---------------- LIGHT PAGES ---------------- */
@@ -382,15 +464,10 @@ html, body {
     width: 100%;
     gap: 30px;
 }
-
 .two-column .left,
-.two-column .right {
-    width: 45%;
-}
+.two-column .right { width: 45%; }
 
-.text-left {
-    text-align: left;
-}
+.text-left { text-align: left; }
 
 .two-column img {
     width: 100%;
@@ -416,19 +493,11 @@ html, body {
     display: inline-block;
     margin: 10px 0 14px;
 }
-
-.dress-list {
-    padding-left: 20px;
-}
-
-.dress-list li {
-    margin-bottom: 8px;
-}
+.dress-list { padding-left: 20px; }
+.dress-list li { margin-bottom: 8px; }
 
 /* ---------------- CONTACT PAGE ---------------- */
-.big-contact {
-    font-size: 3rem;
-}
+.big-contact { font-size: 3rem; }
 
 /* ---------------- BUTTONS ---------------- */
 button {
@@ -442,16 +511,13 @@ button {
     transition: 0.3s ease;
     border-radius: 10px;
 }
-
 button:hover { background: #333; }
 
 button.primary{
     background: #ffffff;
     color: #111;
 }
-button.primary:hover{
-    background: #e9e9e9;
-}
+button.primary:hover{ background: #e9e9e9; }
 
 /* ---------------- FOOTER ---------------- */
 .dark-footer {
@@ -471,19 +537,13 @@ body.locked{
     height: 100vh;
     overflow: hidden;
 }
-
 body.scroll-mode{
     background: #e5e5e5;
     overflow-y: auto;
 }
-
-/* hide intro pages */
 body.scroll-mode #page0,
-body.scroll-mode #page1{
-    display: none;
-}
+body.scroll-mode #page1{ display: none; }
 
-/* stack pages 2-4 normally */
 body.scroll-mode .page{
     position: relative;
     opacity: 1;
@@ -493,69 +553,30 @@ body.scroll-mode .page{
     transition: none;
     padding: 40px;
 }
-
 body.scroll-mode #page2,
 body.scroll-mode #page3,
-body.scroll-mode #page4{
-    display: flex;
-}
-
-body.scroll-mode #page4{
-    padding-bottom: 0;
-}
+body.scroll-mode #page4{ display: flex; }
+body.scroll-mode #page4{ padding-bottom: 0; }
 
 /* ---------------- MOBILE RESPONSIVE ---------------- */
 @media (max-width: 768px) {
+    .page { padding: 20px; min-height: 100vh; }
+    .overlay{ padding: 22px; width: min(860px, 94vw); }
+    .big-title { font-size: 2.4rem; }
+    .game-hint{ font-size: 1.15rem; }
 
-    .page {
-        padding: 20px;
-        min-height: 100vh;
-    }
+    .slot-stage{ width: min(560px, 92vw); }
+    .reel{ height: 112px; border-radius: 14px; }
 
-    .overlay{
-        padding: 22px;
-        width: min(860px, 94vw);
-    }
+    .symbol{ font-size: 2.6rem; }
+    .symbol.xo{ font-size: 2.5rem; }
 
-    .big-title {
-        font-size: 2.4rem;
-    }
+    .lever-wrap{ width: 86px; }
+    .lever{ width: 56px; height: 150px; }
 
-    .game-hint{
-        font-size: 1.15rem;
-    }
-
-    .slot-stage{
-        width: min(560px, 92vw);
-    }
-
-    .reel{
-        height: 112px;
-        border-radius: 14px;
-    }
-
-    .symbol{
-        font-size: 2.6rem;
-    }
-
-    .lever-wrap{
-        width: 86px;
-    }
-
-    .lever{
-        width: 56px;
-        height: 150px;
-    }
-
-    .two-column {
-        flex-direction: column;
-        gap: 22px;
-    }
-
+    .two-column { flex-direction: column; gap: 22px; }
     .two-column .left,
-    .two-column .right {
-        width: 100%;
-    }
+    .two-column .right { width: 100%; }
 
     h1 { font-size: 1.3rem; }
     h2 { font-size: 1.1rem; }
