@@ -7,16 +7,28 @@ const lever = document.getElementById("lever");
 const reelsEl = document.getElementById("reels");
 const slotMachine = document.getElementById("slotMachine");
 const winText = document.getElementById("winText");
-const goldFlash = document.getElementById("goldFlash");
 const sparkLayer = document.getElementById("sparkLayer");
 const floatLayer = document.getElementById("floatLayer");
 
-/* Symbols (dice, cards, neon hearts) */
-const SYMBOLS = ["🎲", "♥", "♦", "♠", "♣", "★"];
+/* FULL PAGE overlay elements */
+const goldPopLayer = document.getElementById("goldPopLayer");
+const flashLayer = document.getElementById("flashLayer");
+const pageFade = document.getElementById("pageFade");
+const page1 = document.getElementById("page1");
+
+/* Symbols (dice, cards, neon hearts + XO) */
+const XO_SYMBOL = "XO";
+const SYMBOLS = ["🎲", "♥", "♦", "♠", "♣", "★", XO_SYMBOL];
 
 let musicStarted = false;
 let spinning = false;
 let won = false;
+
+/* Spin limit logic:
+   If they DON'T win in 5 spins, then next spin forces XO XO XO
+*/
+let spinCount = 0;
+const MAX_FAIL_SPINS = 5;
 
 // Prevent touch scrolling while locked (mobile)
 function preventScroll(e){
@@ -34,13 +46,8 @@ function showOnlyPage(pageNumber){
 }
 
 startBtn?.addEventListener("click", () => {
-    // Open Page 1 (slot game)
     showOnlyPage(1);
-
-    // Start music as soon as Page 1 opens (user gesture = allowed)
     startMusic();
-
-    // Seed reels
     setReels([randSym(), randSym(), randSym()]);
 });
 
@@ -67,11 +74,22 @@ function getReelNodes(){
     return Array.from(reelsEl.querySelectorAll(".reel"));
 }
 
+function applySymbolStyle(symbolSpan, value){
+    if(!symbolSpan) return;
+    symbolSpan.textContent = value;
+
+    if(value === XO_SYMBOL){
+        symbolSpan.classList.add("xo");
+    } else {
+        symbolSpan.classList.remove("xo");
+    }
+}
+
 function setReels(values){
     const reels = getReelNodes();
     reels.forEach((r, i) => {
         const s = r.querySelector(".symbol");
-        if(s) s.textContent = values[i] ?? randSym();
+        applySymbolStyle(s, values[i] ?? randSym());
     });
 }
 
@@ -88,6 +106,8 @@ function spin(){
     if(spinning || won) return;
 
     spinning = true;
+    spinCount++;
+
     if(winText) winText.textContent = "";
     slotMachine?.classList.remove("won");
 
@@ -98,20 +118,28 @@ function spin(){
     const reels = getReelNodes();
     const timers = [];
 
-    // Start "spinning" visuals + rapid symbol changes
+    // Start spinning visuals + rapid changes
     reels.forEach((reelNode) => {
         reelNode.classList.add("spinning");
 
         const t = setInterval(() => {
             const s = reelNode.querySelector(".symbol");
-            if(s) s.textContent = randSym();
+            applySymbolStyle(s, randSym());
         }, 70);
 
         timers.push(t);
     });
 
-    // Stop each reel in sequence for a nicer feel
-    const final = [randSym(), randSym(), randSym()];
+    // Decide final:
+    // On the 6th attempt (spinCount > 5) it will force XO XO XO
+    let final;
+    const forceWin = (spinCount > MAX_FAIL_SPINS);
+
+    if(forceWin){
+        final = [XO_SYMBOL, XO_SYMBOL, XO_SYMBOL];
+    } else {
+        final = [randSym(), randSym(), randSym()];
+    }
 
     const stopReel = (i, delay) => {
         setTimeout(() => {
@@ -119,7 +147,7 @@ function spin(){
             const reelNode = reels[i];
             reelNode.classList.remove("spinning");
             const s = reelNode.querySelector(".symbol");
-            if(s) s.textContent = final[i];
+            applySymbolStyle(s, final[i]);
         }, delay);
     };
 
@@ -135,7 +163,12 @@ function spin(){
             won = true;
             onWin(final[0]);
         } else {
-            if(winText) winText.textContent = "Not quite… pull again.";
+            const left = Math.max(0, MAX_FAIL_SPINS - spinCount + 1);
+            if(winText){
+                winText.textContent = left > 0
+                    ? `Not quite… pull again. (${left} more until luck hits)`
+                    : "Not quite… pull again.";
+            }
         }
     }, 1400);
 }
@@ -144,20 +177,21 @@ function onWin(symbol){
     slotMachine?.classList.add("won");
     if(winText) winText.textContent = "JACKPOT. You're blinded by the lights…";
 
-    // Icons fly out and float around, then burst into gold lights
+    // Icons fly out and float around
     flyOutIcons(symbol);
 
+    // Build-up gold pops (sparse -> dense) + camera flash flickers + subtle bloom
     setTimeout(() => {
-        flashGold();
-        goldSparkBurst(140);
-    }, 900);
+        blindedByLightsSequence();
+    }, 520);
 
-    // Reveal invite after the light moment
+    // Fade to invite right after the peak
     setTimeout(() => {
-        finishGame();
-    }, 2200);
+        fadeIntoInvite();
+    }, 2350);
 }
 
+/* Icons float from reels center */
 function flyOutIcons(symbol){
     if(!floatLayer || !reelsEl) return;
 
@@ -167,17 +201,21 @@ function flyOutIcons(symbol){
     const cx = (reelsRect.left + reelsRect.right) / 2 - stageRect.left;
     const cy = (reelsRect.top + reelsRect.bottom) / 2 - stageRect.top;
 
-    const count = 9;
+    const count = 10;
     for(let i = 0; i < count; i++){
         const el = document.createElement("div");
         el.className = "float-icon";
         el.textContent = symbol;
 
+        if(symbol === XO_SYMBOL){
+            el.classList.add("xo");
+        }
+
         el.style.left = cx + "px";
         el.style.top = cy + "px";
 
-        const tx = rand(-220, 220);
-        const ty = rand(-160, 140);
+        const tx = rand(-240, 240);
+        const ty = rand(-170, 160);
         el.style.setProperty("--tx", tx + "px");
         el.style.setProperty("--ty", ty + "px");
 
@@ -186,35 +224,114 @@ function flyOutIcons(symbol){
     }
 }
 
-function flashGold(){
-    if(!goldFlash) return;
-    goldFlash.classList.remove("on");
-    void goldFlash.offsetWidth; // restart animation
-    goldFlash.classList.add("on");
+/* ---------------- “BLINDED BY THE LIGHTS” SEQUENCE ----------------
+   - Gold pops start sparse then get insanely dense
+   - Camera flash flickers
+   - Subtle bloom on the whole page content
+*/
+function blindedByLightsSequence(){
+    if(page1) page1.classList.add("blooming");
+    if(goldPopLayer) goldPopLayer.classList.add("on");
+
+    // 3 waves: sparse -> medium -> dense
+    // total ~1500ms, feels like a build & drop
+    popWave(35, 0, 520);     // sparse
+    popWave(70, 420, 600);   // medium
+    popWave(140, 900, 650);  // dense peak
+
+    // Flash flickers layered over the build
+    startFlashFlickers(1550);
+
+    // Cleanup bloom shortly after peak (but before fade completes)
+    setTimeout(() => {
+        if(page1) page1.classList.remove("blooming");
+        if(goldPopLayer) goldPopLayer.classList.remove("on");
+    }, 1750);
 }
 
-function goldSparkBurst(amount){
-    if(!sparkLayer || !reelsEl) return;
+/* Make a wave of pops that appear across the entire page */
+function popWave(count, startDelay, duration){
+    setTimeout(() => {
+        fullPageGoldPop(count, duration);
+    }, startDelay);
+}
 
-    const reelsRect = reelsEl.getBoundingClientRect();
-    const stageRect = sparkLayer.getBoundingClientRect();
-    const cx = (reelsRect.left + reelsRect.right) / 2 - stageRect.left;
-    const cy = (reelsRect.top + reelsRect.bottom) / 2 - stageRect.top;
+/* Create gold pops across entire viewport (covers everything) */
+function fullPageGoldPop(bursts = 120, spreadDuration = 600){
+    if(!goldPopLayer) return;
 
-    for(let i = 0; i < amount; i++){
-        const s = document.createElement("div");
-        s.className = "spark";
-        s.style.left = cx + rand(-40, 40) + "px";
-        s.style.top = cy + rand(-30, 30) + "px";
+    const rect = goldPopLayer.getBoundingClientRect();
 
-        const dx = rand(-320, 320) + "px";
-        const dy = rand(-240, 240) + "px";
-        s.style.setProperty("--dx", dx);
-        s.style.setProperty("--dy", dy);
+    for(let i = 0; i < bursts; i++){
+        const dot = document.createElement("div");
+        dot.className = "gold-pop";
 
-        sparkLayer.appendChild(s);
-        setTimeout(() => s.remove(), 1100);
+        // random placement across ENTIRE viewport
+        const x = rand(0, Math.floor(rect.width));
+        const y = rand(0, Math.floor(rect.height));
+
+        dot.style.left = x + "px";
+        dot.style.top = y + "px";
+
+        // Spread over a window so it feels like “popping everywhere”
+        const delay = rand(0, spreadDuration);
+        dot.style.animationDelay = delay + "ms";
+
+        goldPopLayer.appendChild(dot);
+        setTimeout(() => dot.remove(), 1200 + delay);
     }
+}
+
+/* Camera flash flickers:
+   quick random white flashes with a “paparazzi” feel */
+function startFlashFlickers(totalMs = 1200){
+    if(!flashLayer) return;
+
+    let start = performance.now();
+
+    const tick = (now) => {
+        const t = now - start;
+
+        if(t > totalMs){
+            flashLayer.style.opacity = "0";
+            return;
+        }
+
+        // Probability increases toward the end (more chaos at peak)
+        const progress = Math.min(1, t / totalMs);
+        const chance = 0.08 + progress * 0.18; // ramp up
+
+        if(Math.random() < chance){
+            // short flash pulse
+            const strength = 0.12 + Math.random() * (0.55 + progress * 0.25);
+            flashLayer.style.opacity = String(strength);
+
+            // drop it quickly
+            setTimeout(() => {
+                flashLayer.style.opacity = "0";
+            }, 40 + Math.random() * 70);
+        }
+
+        requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+}
+
+function fadeIntoInvite(){
+    if(!pageFade) {
+        finishGame();
+        return;
+    }
+
+    pageFade.classList.remove("on");
+    void pageFade.offsetWidth;
+    pageFade.classList.add("on");
+
+    setTimeout(() => {
+        finishGame();
+        pageFade.classList.remove("on");
+    }, 680);
 }
 
 /* ---------------- FINISH: enable scroll from Show Up to end ---------------- */
@@ -225,7 +342,7 @@ function finishGame(){
     const page2 = document.getElementById("page2");
     setTimeout(() => {
         page2?.scrollIntoView({ behavior: "smooth" });
-    }, 320);
+    }, 220);
 }
 
 /* ---------------- INPUTS: Lever + Spin button ---------------- */
@@ -247,18 +364,19 @@ function pointerDown(e){
     dragging = true;
     dragStartY = (e.touches ? e.touches[0].clientY : e.clientY);
 }
+
 function pointerMove(e){
     if(!dragging || dragStartY == null) return;
     const y = (e.touches ? e.touches[0].clientY : e.clientY);
     const dy = y - dragStartY;
 
-    // pull down enough = spin (fast + smooth on phones)
     if(dy > 40){
         dragging = false;
         dragStartY = null;
         pullLever();
     }
 }
+
 function pointerUp(){
     dragging = false;
     dragStartY = null;
