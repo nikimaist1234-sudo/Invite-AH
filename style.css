@@ -1,0 +1,563 @@
+/* ---------------- RESET ---------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    background: black;
+}
+
+/* ---------------- PAGE SYSTEM (Initial: Smooth Transitions) ---------------- */
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: scale(1.02);
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+
+.page.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+    z-index: 2;
+}
+
+/* ---------------- PAGE 0 (Volume) ---------------- */
+.volume-page {
+    background: url("weeknd-music.jpg") no-repeat center center/cover;
+    color: white;
+}
+
+.volume-overlay h2{
+    margin-top: 10px;
+    opacity: 0.95;
+}
+
+/* ---------------- PAGE 1 ---------------- */
+#page1 {
+    background: url("weeknd-bg.jpg") no-repeat center center/cover;
+    color: white;
+}
+
+.overlay {
+    background: rgba(0,0,0,0.6);
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    width: min(820px, 94vw);
+}
+
+.big-title {
+    font-size: 5rem;
+    margin-bottom: 10px;
+}
+
+/* ---------------- AFTER HOURS SLOT GAME ---------------- */
+.game-area{
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.game-hint{
+    font-size: 1.55rem;
+    opacity: 0.95;
+}
+
+.slot-stage{
+    position: relative;
+    width: min(640px, 92vw);
+    padding: 10px 0 0;
+}
+
+.slot-machine{
+    position: relative;
+    width: 100%;
+    border-radius: 22px;
+    background: radial-gradient(120% 120% at 50% 10%, rgba(255, 215, 0, 0.18), rgba(0,0,0,0.72)),
+                linear-gradient(180deg, rgba(0,0,0,0.92), rgba(0,0,0,0.65));
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    overflow: hidden;
+}
+
+.slot-top{
+    padding: 16px 18px 6px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.slot-title{
+    letter-spacing: 0.32em;
+    font-weight: 900;
+    font-size: 0.95rem;
+    opacity: 0.92;
+}
+
+.slot-subtitle{
+    font-weight: 700;
+    font-size: 0.95rem;
+    opacity: 0.82;
+}
+
+.slot-body{
+    padding: 10px 18px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.reels{
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.reel{
+    position: relative;
+    height: 132px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+    border: 1px solid rgba(255,255,255,0.18);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.reel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: radial-gradient(80% 90% at 50% 20%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events:none;
+}
+
+.symbol{
+    font-size: 3.2rem;
+    text-shadow:
+        0 0 18px rgba(255, 215, 0, 0.18),
+        0 0 28px rgba(255, 60, 60, 0.10);
+    transform: translateZ(0);
+    will-change: transform, filter;
+}
+
+.reel.spinning .symbol{
+    animation: reelJitter 140ms infinite linear;
+    filter: blur(0.35px);
+}
+
+@keyframes reelJitter{
+    0%{ transform: translateY(-2px) scale(1.02); }
+    50%{ transform: translateY(2px) scale(0.98); }
+    100%{ transform: translateY(-2px) scale(1.02); }
+}
+
+/* Lever */
+.lever-wrap{
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.lever{
+    position: relative;
+    width: 60px;
+    height: 160px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    touch-action: none;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.45));
+}
+
+.lever-rod{
+    position: absolute;
+    top: 16px;
+    width: 10px;
+    height: 110px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.18));
+    border: 1px solid rgba(255,255,255,0.28);
+    transform-origin: 50% 18px;
+    transform: rotate(0deg);
+}
+
+.lever-knob{
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.65), rgba(255, 215, 0, 0.38) 38%, rgba(255, 120, 0, 0.22) 62%, rgba(0,0,0,0.35));
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 0 22px rgba(255, 215, 0, 0.18);
+    transform: translateY(0);
+}
+
+.lever.pulling .lever-rod{
+    animation: leverPull 420ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+.lever.pulling .lever-knob{
+    animation: knobPull 420ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+@keyframes leverPull{
+    0%{ transform: rotate(0deg); }
+    55%{ transform: rotate(18deg); }
+    100%{ transform: rotate(0deg); }
+}
+@keyframes knobPull{
+    0%{ transform: translateY(0); }
+    55%{ transform: translateY(26px); }
+    100%{ transform: translateY(0); }
+}
+
+.lever-hint{
+    font-size: 0.9rem;
+    opacity: 0.78;
+    letter-spacing: 0.12em;
+}
+
+.slot-bottom{
+    padding: 0 18px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.win-text{
+    min-height: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    opacity: 0.92;
+}
+
+.spin-btn{
+    margin-top: 0;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+
+.spin-btn:hover{
+    background: rgba(255,255,255,0.16);
+}
+
+.slot-glow{
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle at 50% 40%, rgba(255, 215, 0, 0.16), transparent 55%);
+    pointer-events: none;
+    animation: glowPulse 2.4s ease-in-out infinite;
+    opacity: 0.65;
+}
+
+@keyframes glowPulse{
+    0%{ transform: scale(1); opacity: 0.55; }
+    50%{ transform: scale(1.04); opacity: 0.9; }
+    100%{ transform: scale(1); opacity: 0.55; }
+}
+
+/* Floating icons + gold lights */
+.float-layer, .spark-layer, .gold-flash{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.float-layer{ z-index: 10; }
+.spark-layer{ z-index: 12; }
+
+.gold-flash{
+    z-index: 11;
+    opacity: 0;
+    background: radial-gradient(65% 60% at 50% 45%,
+        rgba(255, 215, 0, 0.98),
+        rgba(255, 215, 0, 0.45) 45%,
+        rgba(255, 215, 0, 0.18) 62%,
+        rgba(0,0,0,0) 78%);
+    mix-blend-mode: screen;
+}
+
+.gold-flash.on{
+    animation: flash 1200ms ease-out forwards;
+}
+
+@keyframes flash{
+    0%{ opacity: 0; transform: scale(0.92); }
+    15%{ opacity: 1; transform: scale(1); }
+    100%{ opacity: 0; transform: scale(1.25); }
+}
+
+.float-icon{
+    position: absolute;
+    font-size: 2.3rem;
+    filter: drop-shadow(0 0 12px rgba(255,215,0,0.25));
+    will-change: transform, opacity;
+    animation: floatAround 1250ms ease-out forwards;
+}
+
+@keyframes floatAround{
+    0%{ transform: translate(0,0) scale(1); opacity: 1; }
+    70%{ transform: translate(var(--tx), var(--ty)) scale(1.05); opacity: 1; }
+    100%{ transform: translate(var(--tx), var(--ty)) scale(0.8); opacity: 0; }
+}
+
+.spark{
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 215, 0, 0.92);
+    box-shadow: 0 0 16px rgba(255,215,0,0.55);
+    will-change: transform, opacity;
+    animation: sparkPop 900ms ease-out forwards;
+}
+
+@keyframes sparkPop{
+    0%{ transform: translate(0,0) scale(1); opacity: 1; }
+    100%{ transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+
+/* WIN shimmer */
+.slot-machine.won{
+    border-color: rgba(255, 215, 0, 0.55);
+    box-shadow: 0 28px 72px rgba(255, 215, 0, 0.14), 0 24px 60px rgba(0,0,0,0.55);
+}
+
+.slot-machine.won .symbol{
+    animation: winPulse 650ms ease-in-out infinite;
+}
+
+@keyframes winPulse{
+    0%{ transform: scale(1); }
+    50%{ transform: scale(1.06); }
+    100%{ transform: scale(1); }
+}
+
+/* ---------------- LIGHT PAGES ---------------- */
+.light-page {
+    background-color: #e5e5e5;
+    color: black;
+}
+
+/* ---------------- TWO COLUMN LAYOUT ---------------- */
+.two-column {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 30px;
+}
+
+.two-column .left,
+.two-column .right {
+    width: 45%;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.two-column img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.tagline{
+    margin-top: 12px;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+.big-line {
+    font-size: 1.3rem;
+    margin-top: 12px;
+}
+
+/* ---------------- PAGE 3 SPECIFIC ---------------- */
+.highlight-box {
+    background-color: #d6d6d6;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 10px 0 14px;
+}
+
+.dress-list {
+    padding-left: 20px;
+}
+
+.dress-list li {
+    margin-bottom: 8px;
+}
+
+/* ---------------- CONTACT PAGE ---------------- */
+.big-contact {
+    font-size: 3rem;
+}
+
+/* ---------------- BUTTONS ---------------- */
+button {
+    margin-top: 18px;
+    padding: 10px 20px;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease;
+    border-radius: 10px;
+}
+
+button:hover { background: #333; }
+
+button.primary{
+    background: #ffffff;
+    color: #111;
+}
+button.primary:hover{
+    background: #e9e9e9;
+}
+
+/* ---------------- FOOTER ---------------- */
+.dark-footer {
+    width: 100%;
+    background: black;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+    font-family: Rockwell, "Times New Roman", serif;
+    margin-top: 30px;
+}
+
+/* ---------------- SCROLL MODE (Page 2 -> end) ---------------- */
+body.locked{
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.scroll-mode{
+    background: #e5e5e5;
+    overflow-y: auto;
+}
+
+/* hide intro pages */
+body.scroll-mode #page0,
+body.scroll-mode #page1{
+    display: none;
+}
+
+/* stack pages 2-4 normally */
+body.scroll-mode .page{
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    transition: none;
+    padding: 40px;
+}
+
+body.scroll-mode #page2,
+body.scroll-mode #page3,
+body.scroll-mode #page4{
+    display: flex;
+}
+
+body.scroll-mode #page4{
+    padding-bottom: 0;
+}
+
+/* ---------------- MOBILE RESPONSIVE ---------------- */
+@media (max-width: 768px) {
+
+    .page {
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .overlay{
+        padding: 22px;
+        width: min(860px, 94vw);
+    }
+
+    .big-title {
+        font-size: 2.4rem;
+    }
+
+    .game-hint{
+        font-size: 1.15rem;
+    }
+
+    .slot-stage{
+        width: min(560px, 92vw);
+    }
+
+    .reel{
+        height: 112px;
+        border-radius: 14px;
+    }
+
+    .symbol{
+        font-size: 2.6rem;
+    }
+
+    .lever-wrap{
+        width: 86px;
+    }
+
+    .lever{
+        width: 56px;
+        height: 150px;
+    }
+
+    .two-column {
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .two-column .left,
+    .two-column .right {
+        width: 100%;
+    }
+
+    h1 { font-size: 1.3rem; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 2rem; }
+}
