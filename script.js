@@ -16,6 +16,24 @@ const flashLayer = document.getElementById("flashLayer");
 const pageFade = document.getElementById("pageFade");
 const page1 = document.getElementById("page1");
 
+// Quiz elements
+const quizOverlay = document.getElementById("quizOverlay");
+const quizStartBtn = document.getElementById("quizStartBtn");
+const quizCloseBtn = document.getElementById("quizCloseBtn");
+const quizStartScreen = document.getElementById("quizStartScreen");
+const quizQuestionsScreen = document.getElementById("quizQuestionsScreen");
+const quizResultScreen = document.getElementById("quizResultScreen");
+const quizBeginBtn = document.getElementById("quizBeginBtn");
+const questionContainer = document.getElementById("questionContainer");
+const currentQSpan = document.getElementById("currentQ");
+const quizNameInput = document.getElementById("quizName");
+const resultHeading = document.getElementById("resultHeading");
+const resultImage = document.getElementById("resultImage");
+const resultDescription = document.getElementById("resultDescription");
+const resultAudio = document.getElementById("resultAudio");
+const tryAgainBtn = document.getElementById("tryAgainBtn");
+const backToInviteBtn = document.getElementById("backToInviteBtn");
+
 /* Symbols (dice, cards, neon hearts + XO) */
 const XO_SYMBOL = "XO";
 const SYMBOLS = ["🎲", "♥", "♦", "♠", "♣", "★", XO_SYMBOL];
@@ -29,6 +47,117 @@ let won = false;
 */
 let spinCount = 0;
 const MAX_FAIL_SPINS = 5;
+
+// Quiz state
+let currentQuestion = 0;
+let userName = "";
+let answers = [];
+let quizActive = false;
+let musicPausedForQuiz = false;
+let musicCurrentTime = 0;
+
+// Song data for After Hours
+const songs = {
+    "afterhours-quiz": {
+        name: "After Hours",
+        image: "afterhours-quiz.jpg",
+        audio: "afterhours-quiz.mp3",
+        description: "You're the devoted romantic. Passionate, intense, and willing to risk everything for love. You live for the late-night moments.",
+        lyric: "I'll risk it all for you"
+    },
+    "blinding-lights": {
+        name: "Blinding Lights",
+        image: "blinding-lights.jpg",
+        audio: "blinding-lights.mp3",
+        description: "You're the main character. Smooth, confident, and a little dangerous. You own every room you enter and leave everyone wanting more.",
+        lyric: "I can't see clearly when you're gone"
+    },
+    "faith": {
+        name: "Faith",
+        image: "faith.jpg",
+        audio: "faith.mp3",
+        description: "You're the soulful seeker. Deep, introspective, and in touch with your emotions. You feel everything from the highest highs to the lowest lows.",
+        lyric: "I feel everything from my body to my soul"
+    },
+    "heartless": {
+        name: "Heartless",
+        image: "heartless.jpg",
+        audio: "heartless.mp3",
+        description: "You're the mysterious loner. Cold on the outside but complex underneath. You've been hurt before, and now you guard your heart carefully.",
+        lyric: "I lost my heart and my mind"
+    },
+    "save-your-tears": {
+        name: "Save Your Tears",
+        image: "save-your-tears.jpg",
+        audio: "save-your-tears.mp3",
+        description: "You're the regretful romantic. You know you've made mistakes and you carry that weight. But you're learning to be better.",
+        lyric: "I broke your heart like someone did to mine"
+    }
+};
+
+// Quiz questions
+const questions = [
+    {
+        question: "If you had to pick one guilty-pleasure snack at midnight, what is it?",
+        choices: [
+            { text: "Chips + something spicy", song: "afterhours-quiz" },
+            { text: "Ice cream straight from the tub", song: "blinding-lights" },
+            { text: "Chocolate/Sweets", song: "faith" },
+            { text: "A sweet pastry / dessert", song: "heartless" },
+            { text: "None of the above...I'm trying to be healthy", song: "save-your-tears" }
+        ]
+    },
+    {
+        question: "Which language would you love to learn just for fun?",
+        choices: [
+            { text: "French", song: "afterhours-quiz" },
+            { text: "Spanish", song: "blinding-lights" },
+            { text: "Italian", song: "faith" },
+            { text: "Japanese", song: "heartless" },
+            { text: "German", song: "save-your-tears" }
+        ]
+    },
+    {
+        question: "Favorite genre of music",
+        choices: [
+            { text: "Pop", song: "afterhours-quiz" },
+            { text: "R&B", song: "blinding-lights" },
+            { text: "80's and 90's", song: "faith" },
+            { text: "Rap", song: "heartless" },
+            { text: "Amapiano", song: "save-your-tears" }
+        ]
+    },
+    {
+        question: "Which one of these places would you like to go to for vacation?",
+        choices: [
+            { text: "Tokyo", song: "afterhours-quiz" },
+            { text: "New York", song: "blinding-lights" },
+            { text: "Rio", song: "faith" },
+            { text: "Paris", song: "heartless" },
+            { text: "Italy", song: "save-your-tears" }
+        ]
+    },
+    {
+        question: "Pick a colour",
+        choices: [
+            { text: "Black", song: "afterhours-quiz" },
+            { text: "White", song: "blinding-lights" },
+            { text: "Red", song: "faith" },
+            { text: "Blue", song: "heartless" },
+            { text: "Yellow", song: "save-your-tears" }
+        ]
+    },
+    {
+        question: "Pick a After Hours lyric",
+        choices: [
+            { text: "After Hours – \"I'll risk it all for you\"", song: "afterhours-quiz" },
+            { text: "Blinding Lights – \"I can't see clearly when you're gone\"", song: "blinding-lights" },
+            { text: "Faith – \"I feel everything from my body to my soul\"", song: "faith" },
+            { text: "Heartless – \"I lost my heart and my mind\"", song: "heartless" },
+            { text: "Save Your Tears – \"I broke your heart like someone did to mine\"", song: "save-your-tears" }
+        ]
+    }
+];
 
 // Prevent touch scrolling while locked (mobile)
 function preventScroll(e){
@@ -66,6 +195,22 @@ function startMusic(){
             clearInterval(fade);
         }
     }, 160);
+}
+
+function pauseMusicForQuiz() {
+    if (music && !music.paused) {
+        musicCurrentTime = music.currentTime;
+        music.pause();
+        musicPausedForQuiz = true;
+    }
+}
+
+function resumeMusicFromQuiz() {
+    if (music && musicPausedForQuiz) {
+        music.currentTime = musicCurrentTime;
+        music.play().catch(() => {});
+        musicPausedForQuiz = false;
+    }
 }
 
 /* ---------------- SLOT GAME ---------------- */
@@ -224,17 +369,12 @@ function flyOutIcons(symbol){
     }
 }
 
-/* ---------------- “BLINDED BY THE LIGHTS” SEQUENCE ----------------
-   - Gold pops start sparse then get insanely dense
-   - Camera flash flickers
-   - Subtle bloom on the whole page content
-*/
+/* "BLINDED BY THE LIGHTS" SEQUENCE */
 function blindedByLightsSequence(){
     if(page1) page1.classList.add("blooming");
     if(goldPopLayer) goldPopLayer.classList.add("on");
 
     // 3 waves: sparse -> medium -> dense
-    // total ~1500ms, feels like a build & drop
     popWave(35, 0, 520);     // sparse
     popWave(70, 420, 600);   // medium
     popWave(140, 900, 650);  // dense peak
@@ -273,7 +413,7 @@ function fullPageGoldPop(bursts = 120, spreadDuration = 600){
         dot.style.left = x + "px";
         dot.style.top = y + "px";
 
-        // Spread over a window so it feels like “popping everywhere”
+        // Spread over a window so it feels like "popping everywhere"
         const delay = rand(0, spreadDuration);
         dot.style.animationDelay = delay + "ms";
 
@@ -282,8 +422,7 @@ function fullPageGoldPop(bursts = 120, spreadDuration = 600){
     }
 }
 
-/* Camera flash flickers:
-   quick random white flashes with a “paparazzi” feel */
+/* Camera flash flickers */
 function startFlashFlickers(totalMs = 1200){
     if(!flashLayer) return;
 
@@ -394,3 +533,215 @@ window.addEventListener("mouseup", pointerUp);
 function rand(min, max){
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+/* ---------------- QUIZ FUNCTIONS ---------------- */
+function openQuiz() {
+    pauseMusicForQuiz();
+    quizOverlay.setAttribute("aria-hidden", "false");
+    quizOverlay.classList.add("active");
+    quizActive = true;
+    
+    // Reset quiz state
+    currentQuestion = 0;
+    answers = [];
+    userName = "";
+    quizNameInput.value = "";
+    
+    // Show start screen, hide others
+    quizStartScreen.style.display = "block";
+    quizQuestionsScreen.style.display = "none";
+    quizResultScreen.style.display = "none";
+    
+    // Stop any playing result audio
+    resultAudio.pause();
+    resultAudio.currentTime = 0;
+}
+
+function closeQuiz() {
+    quizOverlay.setAttribute("aria-hidden", "true");
+    quizOverlay.classList.remove("active");
+    quizActive = false;
+    
+    // Stop result audio
+    resultAudio.pause();
+    resultAudio.currentTime = 0;
+    
+    resumeMusicFromQuiz();
+}
+
+function beginQuiz() {
+    userName = quizNameInput.value.trim() || "Guest";
+    
+    if (!userName) {
+        alert("Please enter your name!");
+        return;
+    }
+    
+    quizStartScreen.style.display = "none";
+    quizQuestionsScreen.style.display = "block";
+    showQuestion(0);
+}
+
+function showQuestion(index) {
+    currentQuestion = index;
+    currentQSpan.textContent = index + 1;
+    
+    const q = questions[index];
+    
+    let html = `
+        <div class="question-box">
+            <h3 class="question-text">${q.question}</h3>
+            <div class="choices-container">
+    `;
+    
+    q.choices.forEach((choice, i) => {
+        html += `
+            <button class="choice-btn" data-song="${choice.song}" data-index="${i}">
+                ${choice.text}
+            </button>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+        <div class="quiz-nav">
+            ${index > 0 ? '<button class="nav-btn prev-btn" id="prevBtn">Previous</button>' : '<div></div>'}
+            ${index === questions.length - 1 ? 
+                '<button class="nav-btn reveal-btn" id="revealBtn" style="display: none;">Reveal my song</button>' : 
+                '<button class="nav-btn next-btn" id="nextBtn" style="display: none;">Next</button>'}
+        </div>
+    `;
+    
+    questionContainer.innerHTML = html;
+    
+    // Add click handlers
+    document.querySelectorAll(".choice-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            // Remove selected from all
+            document.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("selected"));
+            // Add selected to clicked
+            e.target.classList.add("selected");
+            
+            // Store answer
+            answers[index] = e.target.dataset.song;
+            
+            // Show next/reveal button
+            if (index === questions.length - 1) {
+                document.getElementById("revealBtn").style.display = "inline-block";
+            } else {
+                document.getElementById("nextBtn").style.display = "inline-block";
+            }
+        });
+    });
+    
+    // Next button
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            showQuestion(index + 1);
+        });
+    }
+    
+    // Previous button
+    const prevBtn = document.getElementById("prevBtn");
+    if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+            showQuestion(index - 1);
+        });
+    }
+    
+    // Reveal button
+    const revealBtn = document.getElementById("revealBtn");
+    if (revealBtn) {
+        revealBtn.addEventListener("click", () => {
+            showResult();
+        });
+    }
+    
+    // Restore previous selection if exists
+    if (answers[index]) {
+        const prevBtn = document.querySelector(`[data-song="${answers[index]}"]`);
+        if (prevBtn) {
+            prevBtn.classList.add("selected");
+            if (index === questions.length - 1) {
+                document.getElementById("revealBtn").style.display = "inline-block";
+            } else {
+                document.getElementById("nextBtn").style.display = "inline-block";
+            }
+        }
+    }
+}
+
+function showResult() {
+    // Calculate result
+    const songCounts = {};
+    answers.forEach(song => {
+        songCounts[song] = (songCounts[song] || 0) + 1;
+    });
+    
+    // Find song with max count
+    let maxCount = 0;
+    let resultSong = "";
+    
+    for (const [song, count] of Object.entries(songCounts)) {
+        if (count > maxCount) {
+            maxCount = count;
+            resultSong = song;
+        }
+    }
+    
+    // If tie, pick first in answers
+    if (!resultSong) resultSong = answers[0];
+    
+    const songData = songs[resultSong];
+    
+    // Update UI
+    resultHeading.textContent = `${userName}, you Are ${songData.name}`;
+    resultImage.src = songData.image;
+    resultImage.alt = songData.name;
+    resultDescription.textContent = songData.description;
+    
+    // Set up audio
+    resultAudio.src = songData.audio;
+    
+    // Switch screens
+    quizQuestionsScreen.style.display = "none";
+    quizResultScreen.style.display = "block";
+    
+    // Play audio
+    resultAudio.play().catch(() => {});
+    
+    // Scroll to show result
+    setTimeout(() => {
+        quizResultScreen.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+}
+
+function tryAgain() {
+    // Reset and go back to start
+    currentQuestion = 0;
+    answers = [];
+    resultAudio.pause();
+    resultAudio.currentTime = 0;
+    
+    quizResultScreen.style.display = "none";
+    quizStartScreen.style.display = "block";
+    quizNameInput.value = userName;
+}
+
+/* ---------------- QUIZ EVENT LISTENERS ---------------- */
+quizStartBtn?.addEventListener("click", openQuiz);
+quizCloseBtn?.addEventListener("click", closeQuiz);
+quizBeginBtn?.addEventListener("click", beginQuiz);
+tryAgainBtn?.addEventListener("click", tryAgain);
+backToInviteBtn?.addEventListener("click", () => {
+    closeQuiz();
+});
+
+// Close on overlay click
+quizOverlay?.addEventListener("click", (e) => {
+    if (e.target === quizOverlay) {
+        closeQuiz();
+    }
+});
