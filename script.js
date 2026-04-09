@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const left = Math.max(0, MAX_FAIL_SPINS - spinCount + 1);
         if (winText) {
           winText.textContent = left > 0
-            ? `Not quite… pull again. (${left} more until luck hits)`
+            ? `Not quite… pull again. (few more until luck hits)`
             : "Not quite… pull again.";
         }
       }
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultAudio = document.getElementById("resultAudio");
 
   const SONG_KEYS = [
-    "afterhours",
+    "afterhours-quiz",
     "blinding-lights",
     "faith",
     "heartless",
@@ -382,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const SONG_PRETTY = {
-    "afterhours": "After Hours",
+    "afterhours-quiz": "After Hours",
     "blinding-lights": "Blinding Lights",
     "faith": "Faith",
     "heartless": "Heartless",
@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const SONG_BLURB = {
-    "afterhours": "You're the devoted romantic. Passionate, intense, and willing to risk everything for love. You live for the late-night moments.",
+    "afterhours-quiz": "You're the devoted romantic. Passionate, intense, and willing to risk everything for love. You live for the late-night moments.",
     "blinding-lights": "You're the main character. Smooth, confident, and a little dangerous. You own every room you enter and leave everyone wanting more.",
     "faith": "You're the soulful seeker. Deep, introspective, and in touch with your emotions. You feel everything from the highest highs to the lowest lows.",
     "heartless": "You're the mysterious loner. Cold on the outside but complex underneath. You've been hurt before, and now you guard your heart carefully.",
