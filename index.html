@@ -22,7 +22,7 @@
 <section id="page1" class="page">
     <div class="overlay">
         <h1 class="big-title">You're Invited</h1>
-        <h2 class="event-title">X'O Nights: Nikita Turns 21</h2>
+        <h2>X'O Nights: Nikita Turns 21</h2>
 
         <div class="game-area" aria-label="Vegas Gamble Puzzle - Slot Machine">
             <p class="game-hint">Swipe down on the lever/press the spin button until you get three matching icons</p>
@@ -65,10 +65,8 @@
         </div>
     </div>
 
-    <!-- FULL PAGE layers (covers slot machine + everything) -->
-    <div class="gold-pop-layer" id="goldPopLayer" aria-hidden="true"></div>
-    <div class="flash-layer" id="flashLayer" aria-hidden="true"></div>
-    <div class="page-fade" id="pageFade" aria-hidden="true"></div>
+    <!-- XO Rain Layer (like trilogy) -->
+    <div id="xoRainLayer" aria-hidden="true"></div>
 </section>
 
 <!-- PAGE 2 -->
@@ -103,7 +101,7 @@
         </div>
 
         <div class="right text-left">
-            <h1 class="dress-code-title">Dress Code</h1>
+            <h1>Dress Code</h1>
 
             <div class="highlight-box">
                 You have been chosen to represent <strong>After Hours</strong>
@@ -114,11 +112,11 @@
                 <li>Casual, comfort over beauty</li>
             </ul>
 
-            <br>
-            <p><strong>Kindly Note:</strong> The dress code should be represented by your top (t-shirt or dress). Bottoms/pants alone will not meet the requirement. Thank you for understanding.</p>
+            <p class="note-text"><strong>Kindly Note:</strong> The dress code should be represented by your top (t-shirt or dress). Bottoms/pants alone will not meet the requirement. Thank you for understanding.</p>
             
             <br><br>
-            <p class="scroll-hint"><strong>Keep scrolling, I'm not done yet😊</strong></p>
+            
+            <p class="keep-scrolling"><strong>Keep scrolling, I'm not done yet😊</strong></p>
         </div>
     </div>
 </section>
@@ -151,11 +149,11 @@
                     </p>
                 </div>
 
-                <!-- Quiz Section -->
+                <!-- Quiz Teaser -->
                 <div class="quiz-teaser">
-                    <h3 class="quiz-teaser-title">Find out what song you are from After Hours</h3>
+                    <h2 class="quiz-teaser-title">Find out what song you are from in <span class="quiz-album">AFTER HOURS</span></h2>
                     <p class="quiz-teaser-sub">Participate if you want</p>
-                    <button class="quiz-play-btn" id="openQuizBtn">Click to play</button>
+                    <button class="quiz-play-btn" id="openQuizBtn" type="button">Click to play</button>
                 </div>
             </div>
         </div>
@@ -166,92 +164,94 @@
     </footer>
 </section>
 
-<!-- QUIZ SCREEN (Kiss Land style overlay) -->
+<!-- QUIZ SCREEN -->
 <section id="pageQuiz" class="quiz-screen" aria-hidden="true">
     <div class="quiz-inner">
-        <button class="quiz-back-btn" id="quizBackBtn">← Back to invite</button>
-        
-        <h2 class="quiz-title">Which After Hours song are you?</h2>
-        <p class="quiz-subtitle">6 quick picks, soft reveal. <span class="quiz-album">AFTER HOURS</span></p>
-        
-        <form class="quiz-form" id="quizForm">
-            <!-- Name input -->
+        <button class="quiz-back-btn" id="quizBackBtn" type="button">← Back to invite</button>
+
+        <h1 class="quiz-title">Which <span class="quiz-album">AFTER HOURS</span> song are you?</h1>
+        <p class="quiz-subtitle">6 quick picks. Soft reveal. Late night vibes.</p>
+
+        <form id="quizForm" class="quiz-form" autocomplete="off">
             <div class="quiz-q">
-                <h3>Enter your name</h3>
-                <input type="text" class="quiz-name" id="guestName" name="guestName" placeholder="Your name" maxlength="30" required>
+                <h3>Your name</h3>
+                <input
+                    id="guestName"
+                    name="guestName"
+                    type="text"
+                    class="quiz-name"
+                    placeholder="Type your name…"
+                    maxlength="30"
+                    required
+                />
             </div>
 
-            <!-- Question 1 -->
             <div class="quiz-q">
-                <h3>1. If you had to pick one guilty-pleasure snack at midnight, what is it?</h3>
-                <label><input type="radio" name="q1" value="afterhours"> Chips + something spicy</label>
-                <label><input type="radio" name="q1" value="blinding-lights"> Ice cream straight from the tub</label>
-                <label><input type="radio" name="q1" value="faith"> Chocolate/Sweets</label>
-                <label><input type="radio" name="q1" value="heartless"> A sweet pastry / dessert</label>
-                <label><input type="radio" name="q1" value="save-your-tears"> None... I'm trying to be healthy</label>
+                <h3>1) If you had to pick one guilty-pleasure snack at midnight, what is it?</h3>
+                <label><input type="radio" name="q1" value="afterhours"> Chips + something spicy.</label>
+                <label><input type="radio" name="q1" value="blinding-lights"> Ice cream straight from the tub.</label>
+                <label><input type="radio" name="q1" value="faith"> Chocolate/Sweets.</label>
+                <label><input type="radio" name="q1" value="heartless"> A sweet pastry / dessert.</label>
+                <label><input type="radio" name="q1" value="save-your-tears"> Whatever's in the fridge… creatively.</label>
             </div>
 
-            <!-- Question 2 -->
             <div class="quiz-q">
-                <h3>2. Which language would you love to learn just for fun?</h3>
-                <label><input type="radio" name="q2" value="afterhours"> French</label>
-                <label><input type="radio" name="q2" value="blinding-lights"> Spanish</label>
-                <label><input type="radio" name="q2" value="faith"> Italian</label>
-                <label><input type="radio" name="q2" value="heartless"> Japanese</label>
-                <label><input type="radio" name="q2" value="save-your-tears"> German</label>
+                <h3>2) Which language would you love to learn just for fun?</h3>
+                <label><input type="radio" name="q2" value="faith"> French.</label>
+                <label><input type="radio" name="q2" value="afterhours"> Spanish.</label>
+                <label><input type="radio" name="q2" value="save-your-tears"> Italian.</label>
+                <label><input type="radio" name="q2" value="heartless"> Japanese.</label>
+                <label><input type="radio" name="q2" value="blinding-lights"> German.</label>
             </div>
 
-            <!-- Question 3 -->
             <div class="quiz-q">
-                <h3>3. Favorite genre of music</h3>
-                <label><input type="radio" name="q3" value="afterhours"> Pop</label>
-                <label><input type="radio" name="q3" value="blinding-lights"> R&B</label>
-                <label><input type="radio" name="q3" value="faith"> 80's and 90's</label>
-                <label><input type="radio" name="q3" value="heartless"> Rap</label>
-                <label><input type="radio" name="q3" value="save-your-tears"> Amapiano</label>
+                <h3>3) Favorite genre of music</h3>
+                <label><input type="radio" name="q3" value="blinding-lights"> Pop.</label>
+                <label><input type="radio" name="q3" value="faith"> R&B.</label>
+                <label><input type="radio" name="q3" value="afterhours"> 80's and 90's.</label>
+                <label><input type="radio" name="q3" value="save-your-tears"> Rap.</label>
+                <label><input type="radio" name="q3" value="heartless"> Amapiano.</label>
             </div>
 
-            <!-- Question 4 -->
             <div class="quiz-q">
-                <h3>4. Which one of these places would you like to go to for vacation?</h3>
-                <label><input type="radio" name="q4" value="afterhours"> Tokyo</label>
-                <label><input type="radio" name="q4" value="blinding-lights"> New York</label>
-                <label><input type="radio" name="q4" value="faith"> Rio</label>
-                <label><input type="radio" name="q4" value="heartless"> Paris</label>
-                <label><input type="radio" name="q4" value="save-your-tears"> Italy</label>
+                <h3>4) Which one of these places would you like to go to for vacation?</h3>
+                <label><input type="radio" name="q4" value="heartless"> Tokyo.</label>
+                <label><input type="radio" name="q4" value="save-your-tears"> New York.</label>
+                <label><input type="radio" name="q4" value="afterhours"> Rio.</label>
+                <label><input type="radio" name="q4" value="faith"> Paris.</label>
+                <label><input type="radio" name="q4" value="blinding-lights"> Italy.</label>
             </div>
 
-            <!-- Question 5 -->
             <div class="quiz-q">
-                <h3>5. Pick a colour</h3>
-                <label><input type="radio" name="q5" value="afterhours"> Black</label>
-                <label><input type="radio" name="q5" value="blinding-lights"> White</label>
-                <label><input type="radio" name="q5" value="faith"> Red</label>
-                <label><input type="radio" name="q5" value="heartless"> Blue</label>
-                <label><input type="radio" name="q5" value="save-your-tears"> Yellow</label>
+                <h3>5) Pick a colour</h3>
+                <label><input type="radio" name="q5" value="afterhours"> Black.</label>
+                <label><input type="radio" name="q5" value="blinding-lights"> White.</label>
+                <label><input type="radio" name="q5" value="heartless"> Red.</label>
+                <label><input type="radio" name="q5" value="faith"> Blue.</label>
+                <label><input type="radio" name="q5" value="save-your-tears"> Yellow.</label>
             </div>
 
-            <!-- Question 6 -->
             <div class="quiz-q">
-                <h3>6. Pick an After Hours lyric</h3>
-                <label><input type="radio" name="q6" value="afterhours"> "I'll risk it all for you"</label>
-                <label><input type="radio" name="q6" value="blinding-lights"> "I can't see clearly when you're gone"</label>
+                <h3>6) Pick an After Hours lyric</h3>
                 <label><input type="radio" name="q6" value="faith"> "I feel everything from my body to my soul"</label>
+                <label><input type="radio" name="q6" value="afterhours"> "I'll risk it all for you"</label>
                 <label><input type="radio" name="q6" value="heartless"> "I lost my heart and my mind"</label>
+                <label><input type="radio" name="q6" value="blinding-lights"> "I can't see clearly when you're gone"</label>
                 <label><input type="radio" name="q6" value="save-your-tears"> "I broke your heart like someone did to mine"</label>
             </div>
 
-            <button type="button" class="quiz-finish-btn" id="quizFinishBtn">Reveal my song</button>
+            <button class="quiz-finish-btn" id="quizFinishBtn" type="button">Reveal my song</button>
         </form>
 
-        <!-- Quiz Result -->
-        <div class="quiz-result" id="quizResult">
+        <div class="quiz-result" id="quizResult" aria-live="polite">
             <div class="quiz-result-inner fade-soft" id="quizResultInner"></div>
-            <img class="result-cover fade-soft" id="resultCover" alt="Song Album Art">
-            <p class="result-blurb" id="resultBlurb"></p>
+
+            <img id="resultCover" class="result-cover" alt="Song cover" />
+            <p id="resultBlurb" class="result-blurb"></p>
+
             <div class="quiz-result-actions">
-                <button class="quiz-retry-btn" id="quizRetryBtn">Try again</button>
-                <button class="quiz-close-btn" id="quizCloseBtn">Back to invite</button>
+                <button class="quiz-retry-btn" id="quizRetryBtn" type="button">Try again</button>
+                <button class="quiz-close-btn" id="quizCloseBtn" type="button">Back to invite</button>
             </div>
         </div>
 
@@ -259,9 +259,8 @@
     </div>
 </section>
 
-<!-- Audio -->
-<audio id="bgMusic" src="AfterHours.mp3" preload="auto"></audio>
 <audio id="resultAudio" preload="auto"></audio>
+<audio id="bgMusic" src="AfterHours.mp3" preload="auto"></audio>
 
 <script src="script.js"></script>
 </body>
