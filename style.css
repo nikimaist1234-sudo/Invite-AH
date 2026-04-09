@@ -19,18 +19,14 @@ html, body {
     width: 100%;
     min-height: 100vh;
     padding: 40px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-
-    transform: scale(1.02);
-    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    transform: scale(0.98);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .page.active {
@@ -38,7 +34,13 @@ html, body {
     visibility: visible;
     pointer-events: auto;
     transform: scale(1);
-    z-index: 2;
+}
+
+/* Page 1 fade before scrolling reveal (trilogy style) */
+#page1.fade-out{
+    opacity: 0 !important;
+    transform: scale(0.995);
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 /* ---------------- LOCK + SCROLL MODES ---------------- */
@@ -77,88 +79,59 @@ body.scroll-mode #page4{
     padding-bottom: 0;
 }
 
-/* ---------------- PAGE 0 (Volume) ---------------- */
-.volume-page {
+/* ---------------- PAGE 0: VOLUME ---------------- */
+.volume-page{
     background: url("background.jpg") no-repeat center center/cover;
-    color: white;
 }
 
-.volume-overlay h2{
-    margin-top: 10px;
-    opacity: 0.95;
-}
-
-/* ---------------- PAGE 1 ---------------- */
-#page1 {
-    background: url("weeknd-bg.jpg") no-repeat center center/cover;
-    color: white;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Bloom haze layer */
-#page1::after{
-    content:"";
-    position:absolute;
-    inset:-20%;
-    pointer-events:none;
-    opacity: 0;
-    background:
-        radial-gradient(60% 50% at 50% 45%, rgba(255,215,0,0.22), transparent 60%),
-        radial-gradient(40% 35% at 35% 40%, rgba(255,255,255,0.12), transparent 60%),
-        radial-gradient(55% 50% at 65% 55%, rgba(255,215,0,0.16), transparent 65%);
-    filter: blur(14px);
-    z-index: 2;
-    transition: opacity 180ms ease;
-}
-
-#page1.blooming::after{
-    opacity: 1;
-}
-
-#page1.blooming .overlay{
-    filter: saturate(1.08) contrast(1.06) brightness(1.05);
-}
-
-.overlay {
-    background: rgba(0,0,0,0.6);
-    padding: 40px;
-    border-radius: 15px;
+.volume-overlay{
     text-align: center;
-    width: min(820px, 94vw);
-    position: relative;
-    z-index: 3;
+    color: white;
 }
 
-.big-title {
-    font-size: 5rem;
+.primary{
+    margin-top: 20px;
+    padding: 14px 22px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    background: white;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    touch-action: manipulation;
+}
+
+/* ---------------- PAGE 1: SLOT GAME ---------------- */
+#page1{
+    background: url("weeknd-bg.jpg") no-repeat center center/cover;
+}
+
+.overlay{
+    text-align: center;
+    color: white;
+}
+
+.big-title{
+    font-size: 36px;
     margin-bottom: 10px;
+    letter-spacing: 2px;
 }
 
-.event-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-/* ---------------- SLOT GAME ---------------- */
+/* Game area styling */
 .game-area{
-    margin-top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    align-items: center;
+    margin-top: 20px;
 }
 
 .game-hint{
-    font-size: 1.55rem;
-    opacity: 0.95;
+    font-size: 18px;
+    margin-bottom: 14px;
 }
 
 .slot-stage{
     position: relative;
-    width: min(640px, 92vw);
-    padding: 10px 0 0;
+    width: min(560px, 92vw);
+    margin: 0 auto;
 }
 
 .slot-machine{
@@ -349,6 +322,7 @@ body.scroll-mode #page4{
     color: #fff;
     font-weight: 900;
     letter-spacing: 0.12em;
+    cursor: pointer;
 }
 
 .spin-btn:hover{
@@ -428,124 +402,108 @@ body.scroll-mode #page4{
     100%{ transform: scale(1); }
 }
 
-/* ---------------- GOLD POP OVERLAY ---------------- */
-.gold-pop-layer{
-    position: absolute;
+/* ---------------- XO RAIN LAYER (Red/Gold After Hours Style) ---------------- */
+#xoRainLayer{
+    position: fixed;
     inset: 0;
-    z-index: 9999;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 120ms ease;
+    z-index: 9998;
+    overflow: hidden;
 }
-.gold-pop-layer.on{ opacity: 1; }
 
-.gold-pop{
+.xo-piece{
     position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: rgba(255,215,0,0.95);
-    box-shadow:
-        0 0 14px rgba(255,215,0,0.65),
-        0 0 34px rgba(255,215,0,0.35);
-    mix-blend-mode: screen;
-    will-change: transform, opacity;
-    animation: goldPop 900ms ease-out forwards;
-}
-@keyframes goldPop{
-    0%{ transform: scale(0.35); opacity: 0; }
-    18%{ transform: scale(1.35); opacity: 1; }
-    100%{ transform: scale(5.2); opacity: 0; }
+    top: -40px;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1px;
+    animation-name: xoFall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    text-shadow: 0 0 10px rgba(255,215,0,0.25);
 }
 
-.flash-layer{
-    position: absolute;
-    inset: 0;
-    z-index: 10000;
-    pointer-events: none;
-    opacity: 0;
-    background: rgba(255,255,255,1);
-    mix-blend-mode: screen;
+@keyframes xoFall{
+    to{
+        transform: translate(var(--drift), 110vh) rotate(var(--rot));
+        opacity: 0.12;
+    }
 }
 
-.page-fade{
-    position: absolute;
-    inset: 0;
-    z-index: 10001;
-    pointer-events: none;
-    background: rgba(0,0,0,0);
-    opacity: 0;
-}
-.page-fade.on{
-    animation: pageFade 650ms ease-in-out forwards;
-}
-@keyframes pageFade{
-    0%{ opacity: 0; background: rgba(0,0,0,0); }
-    100%{ opacity: 1; background: rgba(0,0,0,1); }
-}
-
-/* ---------------- LIGHT PAGES ---------------- */
-.light-page {
-    background-color: #e5e5e5;
+/* ---------------- LIGHT PAGES (Trilogy Layout) ---------------- */
+.light-page{
+    background: #e5e5e5;
     color: black;
 }
 
-/* ---------------- TWO COLUMN LAYOUT ---------------- */
-.two-column {
+.two-column{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 20px;
     width: min(960px, 92vw);
-    gap: 30px;
+    align-items: center;
+    justify-content: center;
 }
 
-.two-column .left,
-.two-column .right { width: 45%; }
+.left, .right{
+    flex: 1;
+}
 
-.text-left { text-align: left; }
-
-.two-column img {
+.left img{
     width: 100%;
-    border-radius: 8px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+.text-left{
+    text-align: left;
+}
+
+.big-line{
+    font-size: 20px;
+    margin-top: 12px;
 }
 
 .tagline{
-    margin-top: 12px;
-    font-weight: 800;
-    opacity: 0.9;
     text-align: center;
+    margin-top: 10px;
+    opacity: 0.9;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.3px;
 }
 
-.big-line {
-    font-size: 1.3rem;
-    margin-top: 12px;
+.highlight-box{
+    background: rgba(0,0,0,0.06);
+    padding: 14px;
+    border-radius: 14px;
+    margin: 14px 0;
+    border: 1px solid rgba(0,0,0,0.35);
 }
 
-/* ---------------- PAGE 3 ---------------- */
-.dress-code-title {
-    font-size: 2.2rem;
-    margin-bottom: 15px;
+.dress-list{
+    margin-left: 18px;
+    line-height: 1.8;
 }
 
-.highlight-box {
-    background-color: #d6d6d6;
-    padding: 10px 15px;
-    border-radius: 5px;
-    display: inline-block;
-    margin: 10px 0 14px;
-    border: 1px solid #000;
-    font-weight: 500;
+/* Page 3 Note and Keep Scrolling styles (Trilogy style) */
+.note-text{
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
-.dress-list { padding-left: 20px; }
-.dress-list li { margin-bottom: 8px; }
-
-.scroll-hint {
-    font-size: 1.1rem;
-    margin-top: 20px;
+.keep-scrolling{
+    font-size: 18px;
+    margin-top: 8px;
 }
 
-/* ---------------- PAGE 4 / CONTACT ---------------- */
+/* ---------------- CONTACT PAGE ---------------- */
+.big-contact{
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+/* ---------------- UPDATED FOOTER STYLES (Trilogy) ---------------- */
 #page4{
     display: flex;
     flex-direction: column;
@@ -553,6 +511,7 @@ body.scroll-mode #page4{
     justify-content: flex-start;
     gap: 0;
     min-height: 100vh;
+    padding: 0;
 }
 
 #page4 .page4-content{
@@ -560,12 +519,22 @@ body.scroll-mode #page4{
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 40px;
     padding-bottom: 18px;
 }
 
-.big-contact { 
-    font-size: 2.2rem; 
-    margin-bottom: 8px;
+.dark-footer{
+    text-align: center;
+    padding: 18px 0;
+    background: #111;
+    color: white;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    flex-shrink: 0;
 }
 
 .contact-lines{
@@ -577,57 +546,26 @@ body.scroll-mode #page4{
     grid-template-columns: auto 14px 1fr;
     column-gap: 8px;
     align-items: baseline;
-    margin: 10px 0;
+    margin: 8px 0;
     font-size: 18px;
     line-height: 1.35;
 }
 
-.contact-line .label,
-.contact-line .colon{
+.contact-line .label{
     font-weight: 800;
     white-space: nowrap;
+}
+
+.contact-line .colon{
+    font-weight: 800;
+    text-align: center;
 }
 
 .contact-line .value{
     font-weight: 400;
 }
 
-/* Quiz Teaser on Page 4 */
-.quiz-teaser{
-    margin-top: 26px;
-    padding: 16px 14px;
-    border-radius: 16px;
-    background: rgba(0,0,0,0.10);
-    border: 1px solid rgba(0,0,0,0.08);
-    text-align: center;
-}
-
-.quiz-teaser-title{
-    font-size: 16px;
-    margin-bottom: 8px;
-    font-weight: 700;
-}
-
-.quiz-teaser-sub{
-    font-size: 14px;
-    opacity: 0.85;
-    margin-bottom: 12px;
-}
-
-.quiz-play-btn{
-    padding: 12px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.18);
-    background: rgba(0,0,0,0.08);
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.quiz-play-btn:hover{ 
-    background: rgba(0,0,0,0.12); 
-}
-
-/* ---------------- QUIZ SCREEN ---------------- */
+/* ---------------- QUIZ (Trilogy Layout Style) ---------------- */
 body.quiz-open{
     overflow: hidden !important;
 }
@@ -652,7 +590,7 @@ body.quiz-open .quiz-screen{
     width: min(780px, 92vw);
     margin: 0 auto;
     position: relative;
-    padding: 18px 0 60px;
+    padding: 18px 0 40px;
 }
 
 .quiz-back-btn{
@@ -663,7 +601,6 @@ body.quiz-open .quiz-screen{
     border-radius: 12px;
     cursor: pointer;
     margin-bottom: 18px;
-    font-weight: 600;
 }
 
 .quiz-title{
@@ -683,7 +620,6 @@ body.quiz-open .quiz-screen{
 .quiz-album{
     opacity: 0.95;
     letter-spacing: 1px;
-    font-weight: 700;
 }
 
 .quiz-form{
@@ -702,7 +638,6 @@ body.quiz-open .quiz-screen{
     margin-bottom: 10px;
     font-size: 15px;
     color: #fff;
-    font-weight: 600;
 }
 
 .quiz-name{
@@ -730,12 +665,6 @@ body.quiz-open .quiz-screen{
     cursor: pointer;
     user-select: none;
     color: rgba(255,255,255,0.95);
-    transition: all 0.2s ease;
-}
-
-.quiz-q label:hover{
-    background: rgba(0,0,0,0.25);
-    border-color: rgba(255,255,255,0.3);
 }
 
 .quiz-q input[type="radio"]{
@@ -753,16 +682,9 @@ body.quiz-open .quiz-screen{
     cursor: pointer;
     font-size: 18px;
     font-weight: 700;
-    transition: all 0.3s ease;
 }
 
-.quiz-finish-btn:hover{
-    background: rgba(255,255,255,0.25);
-}
-
-.quiz-finish-btn:active{ 
-    transform: scale(0.99); 
-}
+.quiz-finish-btn:active{ transform: scale(0.99); }
 
 .quiz-result{
     display: none;
@@ -781,11 +703,6 @@ body.quiz-open .quiz-screen{
     color: #fff;
 }
 
-.quiz-result-inner h2 span{
-    color: #ffd700;
-    font-weight: 700;
-}
-
 .fade-soft{
     opacity: 0;
     transform: translateY(6px);
@@ -802,12 +719,9 @@ body.quiz-open .quiz-screen{
     border-radius: 18px;
     display: none;
     border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.result-cover.show{ 
-    display: block; 
-}
+.result-cover.show{ display:block; }
 
 .result-blurb{
     margin-top: 10px;
@@ -815,7 +729,6 @@ body.quiz-open .quiz-screen{
     line-height: 1.45;
     color: rgba(255,255,255,0.95);
     opacity: 0.95;
-    font-style: italic;
 }
 
 .quiz-result-actions{
@@ -833,13 +746,6 @@ body.quiz-open .quiz-screen{
     background: rgba(255,255,255,0.12);
     color: #fff;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.quiz-retry-btn:hover,
-.quiz-close-btn:hover{
-    background: rgba(255,255,255,0.2);
 }
 
 .quiz-overlay{
@@ -851,75 +757,69 @@ body.quiz-open .quiz-screen{
     transition: opacity 0.5s ease;
 }
 
-.quiz-overlay.on{ 
-    opacity: 1; 
-}
+.quiz-overlay.on{ opacity: 1; }
 
-/* ---------------- BUTTONS ---------------- */
-button {
-    margin-top: 18px;
-    padding: 10px 20px;
-    border: none;
-    background: black;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s ease;
-    border-radius: 10px;
-}
-button:hover { background: #333; }
-
-button.primary{
-    background: #ffffff;
-    color: #111;
-}
-button.primary:hover{ background: #e9e9e9; }
-
-/* ---------------- FOOTER ---------------- */
-.dark-footer {
-    width: 100%;
-    background: black;
-    color: white;
-    padding: 15px 0;
+.quiz-teaser{
+    margin-top: 26px;
+    padding: 16px 14px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.10);
+    border: 1px solid rgba(0,0,0,0.08);
     text-align: center;
-    font-weight: bold;
-    font-size: 2rem;
-    font-family: Rockwell, "Times New Roman", serif;
-    margin-top: auto;
 }
+
+.quiz-teaser-title{
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.quiz-teaser-sub{
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 12px;
+}
+
+.quiz-play-btn{
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.08);
+    cursor: pointer;
+}
+
+.quiz-play-btn:hover{ background: rgba(0,0,0,0.12); }
 
 /* ---------------- MOBILE RESPONSIVE ---------------- */
 @media (max-width: 768px) {
-    .page { 
-        padding: 20px; 
-        min-height: 100vh; 
-    }
-    .overlay{ 
-        padding: 22px; 
-        width: min(860px, 94vw); 
-    }
-    .big-title { 
-        font-size: 2.4rem; 
-    }
-    .game-hint{ 
-        font-size: 1.15rem; 
+    .page {
+        padding: 20px;
+        min-height: 100vh;
     }
 
-    .slot-stage{ 
-        width: min(560px, 92vw); 
+    /* Adjust page4 content padding on mobile */
+    #page4 .page4-content{
+        padding: 20px;
+        padding-bottom: 18px;
     }
+
+    .two-column{
+        flex-direction: column;
+    }
+
+    .big-title{
+        font-size: 30px;
+    }
+
     .reel{ 
         height: 112px; 
         border-radius: 14px; 
     }
-
     .symbol{ 
         font-size: 2.6rem; 
     }
     .symbol.xo{ 
         font-size: 2.5rem; 
     }
-
     .lever-wrap{ 
         width: 86px; 
     }
@@ -927,20 +827,14 @@ button.primary:hover{ background: #e9e9e9; }
         width: 56px; 
         height: 150px; 
     }
+}
 
-    .two-column { 
-        flex-direction: column; 
-        gap: 22px; 
+@media (max-width: 480px){
+    .contact-line{
+        font-size: 16px;
+        grid-template-columns: auto 12px 1fr;
     }
-    .two-column .left,
-    .two-column .right { 
-        width: 100%; 
-    }
-
-    h1 { font-size: 1.3rem; }
-    h2 { font-size: 1.1rem; }
-    h3 { font-size: 2rem; }
-
+    
     .quiz-title{ 
         font-size: 22px; 
     }
@@ -950,27 +844,8 @@ button.primary:hover{ background: #e9e9e9; }
     .quiz-q label{ 
         padding: 10px; 
     }
-
-    .dress-code-title {
-        font-size: 1.8rem;
-    }
-    
-    .big-contact {
-        font-size: 1.8rem;
-    }
-    
-    .contact-line{
-        font-size: 16px;
-        grid-template-columns: auto 12px 1fr;
-    }
 }
 
-@media (max-width: 480px){
-    .contact-line{
-        font-size: 15px;
-    }
-    
-    .quiz-title{
-        font-size: 20px;
-    }
+.is-hidden{
+    display: none !important;
 }
